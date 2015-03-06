@@ -1,0 +1,55 @@
+<html>
+<head>
+  <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="guestbookContainer">
+  <header>Digital Guestbook</header>
+
+  <div class="commentBoxInput">
+    <label for="nameInput">Name:</label>
+    <input type="text" id="nameInput" placeholder="Please write your name">
+  
+     <label for="messageInput">Message:</label>
+    <input type="text" id="messageInput"  placeholder="Write your message here">
+      </div>
+  <footer>
+     
+        <ul id="messages" class="guestMessages"></ul>
+  </footer>
+</div>
+
+<script>
+  var ref = new Firebase("https://testapp02282015.firebaseio.com/");
+  var guestMessage = $("#messageInput");
+  var guestFirstLast = $("#nameInput");
+  var messageList = $("#messages");
+  guestMessage.keypress(function (buttonPress) {
+    if (buttonPress.keyCode == 13) {
+      var username = guestFirstLast.val();
+      var message = guestMessage.val();
+
+      ref.push({name:username, text:message});
+      guestMessage.val("");
+    }
+  });
+
+  ref.limitToLast(5).on("child_added", function (snapshot) {
+    var data = snapshot.val();
+    var username = data.name || "Anonymous";
+    var message = data.text;
+
+    var messageElement = $("<li>");
+    var nameElement = $("<strong class='guestName'></strong>")
+    nameElement.text(username);
+    messageElement.text(" " + message).prepend(nameElement);
+
+    messageList.append(messageElement)
+
+    messageList[0].scrollTop = messageList[0].scrollHeight;
+  });
+</script>
+</body>
+</html
